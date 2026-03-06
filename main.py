@@ -3,7 +3,7 @@ import mysql.connector
 # --- CONFIGURAÇÕES DO MYSQL ---
 DB_HOST = "localhost"
 DB_USER = "root"
-DB_PASSWORD = ""
+DB_PASSWORD = "QwertyuioP@1706"
 DB_DATABASE = "inkmanager"
 
 # --- 1. INICIALIZAÇÃO AUTOMÁTICA ---
