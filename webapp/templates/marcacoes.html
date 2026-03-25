@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Marcacoes - InkManager{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <div class="page-title">Marcações</div>
+        <div class="page-subtitle">{{ marcacoes|length }} marcações</div>
+    </div>
+    <a href="{{ url_for('nova_marcacao') }}" class="btn btn-primary">+ Nova Marcação</a>
+</div>
+<div class="filter-tabs">
+    <a href="{{ url_for('marcacoes') }}" class="filter-tab {% if not estado_filtro %}active{% endif %}">Todas</a>
+    <a href="{{ url_for('marcacoes', estado='Pendente') }}" class="filter-tab {% if estado_filtro=='Pendente' %}active{% endif %}">Pendentes</a>
+    <a href="{{ url_for('marcacoes', estado='Concluida') }}" class="filter-tab {% if estado_filtro=='Concluida' %}active{% endif %}">Concluidas</a>
+    <a href="{{ url_for('marcacoes', estado='Cancelada') }}" class="filter-tab {% if estado_filtro=='Cancelada' %}active{% endif %}">Canceladas</a>
+    <a href="{{ url_for('marcacoes', estado='Adiada') }}" class="filter-tab {% if estado_filtro=='Adiada' %}active{% endif %}">Adiadas</a>
+</div>
+<div class="section-block">
+<div class="table-wrap">
+    {% if marcacoes %}
+    <table>
+        <thead><tr>
+            <th>Data / Hora</th><th>Cliente</th><th>Tipo</th><th>Descricao</th><th>Valor</th><th>Duracao</th><th>Estado</th><th></th>
+        </tr></thead>
+        <tbody>
+        {% for m in marcacoes %}
+        {% set est = m.estado|lower %}
+        <tr>
+            <td class="muted">{% if m.data_hora %}{{ m.data_hora.strftime('%d/%m/%Y %H:%M') }}{% else %}---{% endif %}</td>
+            <td><a href="{{ url_for('ficha_cliente', id_c=m.id_cliente) }}" style="color:var(--text);font-weight:500;">{{ m.nome_cliente }}</a></td>
+            <td class="muted">{{ m.tipo or '---' }}</td>
+            <td class="muted">{{ m.descricao or '---' }}</td>
+            <td class="muted">{% if m.valor %}{{ m.valor }}€{% else %}---{% endif %}</td>
+            <td class="muted">{% if m.duracao %}{{ m.duracao }}h{% else %}---{% endif %}</td>
+            <td><span class="badge badge-{{ est }}">{{ m.estado }}</span></td>
+            <td style="white-space:nowrap">
+                <form class="inline-form" method="post" action="{{ url_for('alterar_estado', id_m=m.id) }}">
+                    <select name="estado" onchange="this.form.submit()" style="padding:4px 10px;font-size:0.68rem;background:var(--bg3);border:1.5px solid var(--border);color:var(--text2);border-radius:6px;">
+                        <option value="Pendente" {% if m.estado=='Pendente' %}selected{% endif %}>Pendente</option>
+                        <option value="Concluida" {% if m.estado=='Concluida' %}selected{% endif %}>Concluida</option>
+                        <option value="Cancelada" {% if m.estado=='Cancelada' %}selected{% endif %}>Cancelada</option>
+                        <option value="Adiada" {% if m.estado=='Adiada' %}selected{% endif %}>Adiada</option>
+                    </select>
+                </form>
+                <a href="{{ url_for('editar_marcacao', id_m=m.id) }}" class="btn btn-ghost btn-sm" style="margin-left:6px">Editar</a>
+                <form class="inline-form" method="post" action="{{ url_for('apagar_marcacao', id_m=m.id) }}" onsubmit="return confirm('Apagar?')" style="margin-left:6px">
+                    <button type="submit" class="btn btn-danger btn-sm">X</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon">📭</div>
+        Nenhuma marcacao
+    </div>
+    {% endif %}
+</div>
+</div>
+{% endblock %}

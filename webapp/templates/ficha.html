@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+{% block title %}{{ cliente.nome }} — InkManager{% endblock %}
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <div class="page-title">Ficha</div>
+        <div class="page-subtitle"><a href="{{ url_for('clientes') }}" style="color:var(--text3)">Clientes</a> / {{ cliente.nome }}</div>
+    </div>
+</div>
+
+<div class="ficha-header">
+    <div class="ficha-header-left">
+        <div class="ficha-avatar">{{ cliente.nome[0]|upper }}</div>
+        <div>
+            <div class="ficha-nome">{{ cliente.nome }}</div>
+            <div class="ficha-meta">
+                {% if cliente.data_nascimento %}
+                <div class="ficha-meta-item">🎂 <span>{{ cliente.data_nascimento.strftime('%d/%m/%Y') }}</span></div>
+                {% endif %}
+                {% if cliente.telemovel %}
+                <div class="ficha-meta-item">📱 <span>{{ cliente.telemovel }}</span></div>
+                {% endif %}
+                {% if cliente.instagram %}
+                <div class="ficha-meta-item">📸 <span>{{ cliente.instagram }}</span></div>
+                {% endif %}
+                {% if cliente.email %}
+                <div class="ficha-meta-item">✉️ <span>{{ cliente.email }}</span></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="ficha-actions">
+        <a href="{{ url_for('editar_cliente', id_c=cliente.id) }}" class="btn btn-ghost btn-sm">Editar</a>
+        <form class="inline-form" method="post" action="{{ url_for('apagar_cliente', id_c=cliente.id) }}"
+              onsubmit="return confirm('Apagar {{ cliente.nome }} e todo o histórico?')">
+            <button type="submit" class="btn btn-danger btn-sm">Apagar</button>
+        </form>
+    </div>
+</div>
+
+{% if cliente.observacoes %}
+<div class="ficha-obs">
+    <div class="ficha-obs-label">Observacoes / Alergias</div>
+    {{ cliente.observacoes }}
+</div>
+{% endif %}
+
+<div class="ficha-grid">
+
+    <!-- MARCACOES -->
+    <div class="section-block">
+        <div class="section-block-header">
+            <span class="section-block-title">Marcacoes ({{ marcacoes|length }})</span>
+            <a href="{{ url_for('nova_marcacao') }}" class="btn btn-gold btn-sm">+ Nova</a>
+        </div>
+        <div class="table-wrap">
+            {% if marcacoes %}
+            <table>
+                <thead><tr><th>Data</th><th>Tipo</th><th>Valor</th><th>Estado</th><th></th></tr></thead>
+                <tbody>
+                {% for m in marcacoes %}
+                {% set est = m.estado|lower %}
+                <tr>
+                    <td class="muted" style="font-size:0.78rem">
+                        {% if m.data_hora %}{{ m.data_hora.strftime('%d/%m/%y %H:%M') }}{% else %}---{% endif %}
+                    </td>
+                    <td style="font-size:0.82rem">{{ m.tipo or '---' }}</td>
+                    <td class="muted">{% if m.valor %}{{ m.valor }}€{% else %}---{% endif %}</td>
+                    <td><span class="badge badge-{{ est }}">{{ m.estado }}</span></td>
+                    <td>
+                        <form class="inline-form" method="post" action="{{ url_for('alterar_estado', id_m=m.id) }}">
+                            <select name="estado" onchange="this.form.submit()" style="padding:4px 10px;font-size:0.68rem;background:var(--parchment);border:1.5px solid var(--border);color:var(--text2);border-radius:6px;">
+                                <option value="Pendente"  {% if m.estado=='Pendente'  %}selected{% endif %}>Pendente</option>
+                                <option value="Concluida" {% if m.estado=='Concluida' %}selected{% endif %}>Concluida</option>
+                                <option value="Cancelada" {% if m.estado=='Cancelada' %}selected{% endif %}>Cancelada</option>
+                                <option value="Adiada"    {% if m.estado=='Adiada'    %}selected{% endif %}>Adiada</option>
+                            </select>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">📭</div>
+                Nenhuma marcacao
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- FICHEIROS -->
+    <div class="section-block">
+        <div class="section-block-header">
+            <span class="section-block-title">Ficheiros ({{ ficheiros|length }})</span>
+        </div>
+
+        <!-- UPLOAD FORM -->
+        <div style="padding:20px 24px; border-bottom:1px solid var(--border); background:var(--parchment);">
+            <form method="post" action="{{ url_for('upload_ficheiro', id_c=cliente.id) }}" enctype="multipart/form-data">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+                    <div class="form-group">
+                        <label>Ficheiro</label>
+                        <input type="file" name="ficheiro" accept=".jpg,.jpeg,.png,.pdf,.txt" required style="padding:7px 12px;font-size:0.8rem;">
+                    </div>
+                    <div class="form-group">
+                        <label>Descrição</label>
+                        <input type="text" name="descricao" placeholder="Ex: Termo de responsabilidade, foto pós-tattoo...">
+                    </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end;">
+                    <div class="form-group">
+                        <label>Associar a marcação (opcional)</label>
+                        <select name="id_marcacao" style="padding:10px 14px;font-size:0.85rem;">
+                            <option value="">Nenhuma marcação específica</option>
+                            {% for m in marcacoes %}
+                            <option value="{{ m.id }}">
+                                {% if m.data_hora %}{{ m.data_hora.strftime('%d/%m/%Y') }}{% endif %} — {{ m.tipo or 'Tatuagem' }}{% if m.descricao %} ({{ m.descricao[:30] }}){% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-gold">Carregar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- LISTA DE FICHEIROS -->
+        <div class="table-wrap">
+            {% if ficheiros %}
+            <table>
+                <thead><tr><th>Ficheiro</th><th>Tipo</th><th>Descrição</th><th></th></tr></thead>
+                <tbody>
+                {% for f in ficheiros %}
+                <tr>
+                    <td style="font-size:0.82rem;">
+                        <a href="{{ url_for('ver_ficheiro', id_f=f.id) }}" target="_blank" style="color:var(--gold);text-decoration:underline;">
+                            {% if f.tipo in ['jpg','jpeg','png'] %}🖼️{% elif f.tipo == 'pdf' %}📄{% else %}📝{% endif %}
+                            {{ f.nome_ficheiro }}
+                        </a>
+                    </td>
+                    <td>
+                        <span class="badge" style="color:var(--lavender);background:var(--parchment2);">
+                            {{ f.tipo|upper }}
+                        </span>
+                    </td>
+                    <td class="muted" style="font-size:0.78rem">{{ f.descricao or '---' }}</td>
+                    <td>
+                        <form class="inline-form" method="post" action="{{ url_for('apagar_ficheiro', id_f=f.id) }}"
+                              onsubmit="return confirm('Apagar este ficheiro?')">
+                            <input type="hidden" name="id_cliente" value="{{ cliente.id }}">
+                            <button type="submit" class="btn btn-danger btn-sm">✕</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">📂</div>
+                Nenhum ficheiro ainda<br>
+                <small style="font-size:0.72rem;margin-top:4px;display:block;color:var(--text3)">
+                    Usa o formulário acima para carregar
+                </small>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+<!-- PREVIEW DE IMAGENS -->
+{% for f in ficheiros %}
+{% if f.tipo in ['jpg','jpeg','png'] %}
+<div id="preview-{{ f.id }}" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:1000;align-items:center;justify-content:center;" onclick="this.style.display='none'">
+    <img src="{{ url_for('ver_ficheiro', id_f=f.id) }}" style="max-width:90%;max-height:90%;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,0.5);">
+</div>
+{% endif %}
+{% endfor %}
+
+{% endblock %}

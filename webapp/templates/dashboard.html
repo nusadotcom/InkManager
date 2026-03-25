@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — InkManager{% endblock %}
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <div class="page-title">Bom dia ✨</div>
+        <div class="page-subtitle">Aqui está o resumo do teu estúdio</div>
+    </div>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-number">{{ total_clientes }}</div>
+        <div class="stat-label">Clientes</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">{{ total_marcacoes }}</div>
+        <div class="stat-label">Total Marcações</div>
+    </div>
+    <div class="stat-card accent">
+        <div class="stat-number">{{ pendentes }}</div>
+        <div class="stat-label">Pendentes</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">{{ concluidas }}</div>
+        <div class="stat-label">Concluídas</div>
+    </div>
+</div>
+
+<div class="content-grid">
+
+    <div class="section-block">
+        <div class="section-block-header">
+            <span class="section-block-title">📅 Próximas Marcações</span>
+            <a href="{{ url_for('nova_marcacao') }}" class="btn btn-gold btn-sm">+ Nova</a>
+        </div>
+        <div class="table-wrap">
+            {% if proximas %}
+            <table>
+                <thead><tr><th>Cliente</th><th>Data / Hora</th><th>Tipo</th></tr></thead>
+                <tbody>
+                {% for m in proximas %}
+                <tr>
+                    <td>
+                        <div class="client-name-cell">
+                            <div class="client-avatar" style="width:30px;height:30px;font-size:0.7rem;">
+                                {{ m.nome[0]|upper }}
+                            </div>
+                            <a href="{{ url_for('ficha_cliente', id_c=m.id_cliente) }}" class="client-name-text" style="font-size:0.85rem;">{{ m.nome }}</a>
+                        </div>
+                    </td>
+                    <td class="muted">{{ m.data_hora.strftime('%d/%m %H:%M') if m.data_hora else '—' }}</td>
+                    <td class="muted">{{ m.tipo or '—' }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">📭</div>
+                Sem marcações pendentes
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="section-block">
+        <div class="section-block-header">
+            <span class="section-block-title">👥 Clientes Recentes</span>
+            <a href="{{ url_for('novo_cliente') }}" class="btn btn-gold btn-sm">+ Novo</a>
+        </div>
+        <div class="table-wrap">
+            {% if recentes %}
+            <table>
+                <thead><tr><th>Nome</th><th>Telemóvel</th></tr></thead>
+                <tbody>
+                {% for c in recentes %}
+                <tr>
+                    <td>
+                        <div class="client-name-cell">
+                            <div class="client-avatar" style="width:30px;height:30px;font-size:0.7rem;">
+                                {{ c.nome[0]|upper }}
+                            </div>
+                            <a href="{{ url_for('ficha_cliente', id_c=c.id) }}" class="client-name-text" style="font-size:0.85rem;">{{ c.nome }}</a>
+                        </div>
+                    </td>
+                    <td class="muted">{{ c.telemovel or '—' }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">👤</div>
+                Sem clientes registados
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
