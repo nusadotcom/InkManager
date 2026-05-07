@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}InkManager{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<nav class="sidebar">
+    <div class="sidebar-logo">
+        <div class="logo-icon">💉</div>
+        <div>
+            <div class="logo-title">InkManager</div>
+            <div class="logo-sub">CRM Studio</div>
+        </div>
+    </div>
+    <ul class="nav-links">
+        <li><a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
+            <span class="nav-icon">🏠</span> Dashboard
+        </a></li>
+        <li><a href="{{ url_for('clientes') }}" class="nav-link {% if 'cliente' in request.endpoint %}active{% endif %}">
+            <span class="nav-icon">👥</span> Clientes
+        </a></li>
+        <li><a href="{{ url_for('marcacoes') }}" class="nav-link {% if 'marcac' in request.endpoint %}active{% endif %}">
+            <span class="nav-icon">📅</span> Marcações
+        </a></li>
+    </ul>
+    <div class="sidebar-footer">v3.0</div>
+</nav>
+
+<main class="main-content">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-container">
+            {% for category, message in messages %}
+                <div class="flash flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+</main>
+
+<script>
+    setTimeout(() => {
+        document.querySelectorAll('.flash').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(-8px)';
+            setTimeout(() => el.remove(), 400);
+        });
+    }, 3500);
+</script>
+</body>
+</html>

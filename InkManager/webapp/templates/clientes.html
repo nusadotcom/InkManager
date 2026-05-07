@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Clientes — InkManager{% endblock %}
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <div class="page-title">Clientes</div>
+        <div class="page-subtitle">{{ clientes|length }} registado{{ 's' if clientes|length != 1 else '' }}</div>
+    </div>
+    <a href="{{ url_for('novo_cliente') }}" class="btn btn-primary">+ Novo Cliente</a>
+</div>
+
+<form class="search-bar" method="get">
+    <input type="text" name="q" placeholder="Pesquisar por nome, telemóvel ou instagram..." value="{{ pesquisa }}">
+    <button type="submit" class="btn btn-ghost">Pesquisar</button>
+    {% if pesquisa %}<a href="{{ url_for('clientes') }}" class="btn btn-ghost">✕ Limpar</a>{% endif %}
+</form>
+
+<div class="section-block">
+<div class="table-wrap">
+    {% if clientes %}
+    <table>
+        <thead><tr>
+            <th>Nome</th><th>Telemóvel</th><th>Instagram</th><th>Email</th><th>Desde</th><th></th>
+        </tr></thead>
+        <tbody>
+        {% for c in clientes %}
+        <tr>
+            <td>
+                <div class="client-name-cell">
+                    <div class="client-avatar">{{ c.nome[0]|upper }}</div>
+                    <a href="{{ url_for('ficha_cliente', id_c=c.id) }}" class="client-name-text">{{ c.nome }}</a>
+                </div>
+            </td>
+            <td class="muted">{{ c.telemovel or '—' }}</td>
+            <td class="muted">{{ c.instagram or '—' }}</td>
+            <td class="muted">{{ c.email or '—' }}</td>
+            <td class="muted">{{ c.data_registo.strftime('%d/%m/%Y') if c.data_registo else '—' }}</td>
+            <td><a href="{{ url_for('ficha_cliente', id_c=c.id) }}" class="btn btn-ghost btn-sm">Ver</a></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon">👤</div>
+        {% if pesquisa %}Sem resultados para "{{ pesquisa }}"{% else %}Nenhum cliente registado{% endif %}
+    </div>
+    {% endif %}
+</div>
+</div>
+{% endblock %}
