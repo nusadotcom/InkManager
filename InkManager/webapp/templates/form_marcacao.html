@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}{{ titulo }} — InkManager{% endblock %}
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <div class="page-title">{{ titulo }}</div>
+        <div class="page-subtitle"><a href="{{ url_for('marcacoes') }}" style="color:var(--text3)">Marcacoes</a> / {{ titulo }}</div>
+    </div>
+</div>
+
+<div class="form-card">
+    <form method="post">
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Cliente *</label>
+                <select name="id_cliente" required>
+                    <option value="">Seleciona um cliente...</option>
+                    {% for c in clientes %}
+                    <option value="{{ c.id }}" {% if marcacao.id_cliente == c.id %}selected{% endif %}>{{ c.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Data e Hora *</label>
+                <input type="datetime-local" name="data_hora"
+                    value="{{ marcacao.data_hora_fmt if marcacao.data_hora_fmt else '' }}" required>
+            </div>
+            <div class="form-group">
+                <label>Tipo</label>
+                <select name="tipo">
+                    <option value="Tatuagem" {% if marcacao.tipo == 'Tatuagem' %}selected{% endif %}>Tatuagem</option>
+                    <option value="Consulta" {% if marcacao.tipo == 'Consulta' %}selected{% endif %}>Consulta</option>
+                    <option value="Acompanhamento pos-tattoo" {% if marcacao.tipo == 'Acompanhamento pos-tattoo' %}selected{% endif %}>Acompanhamento pos-tattoo</option>
+                    <option value="Outro" {% if marcacao.tipo == 'Outro' %}selected{% endif %}>Outro</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Estado</label>
+                <select name="estado">
+                    <option value="Pendente"  {% if marcacao.estado == 'Pendente'  %}selected{% endif %}>Pendente</option>
+                    <option value="Concluida" {% if marcacao.estado == 'Concluida' %}selected{% endif %}>Concluida</option>
+                    <option value="Cancelada" {% if marcacao.estado == 'Cancelada' %}selected{% endif %}>Cancelada</option>
+                    <option value="Adiada"    {% if marcacao.estado == 'Adiada'    %}selected{% endif %}>Adiada</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Valor (EUR)</label>
+                <input type="number" step="0.01" name="valor"
+                    value="{{ marcacao.valor if marcacao.valor else '' }}" placeholder="0.00">
+            </div>
+            <div class="form-group">
+                <label>Duracao</label>
+                <input type="text" name="duracao"
+                    value="{{ marcacao.duracao if marcacao.duracao else '' }}" placeholder="Ex: 1.30 = 1h30min">
+            </div>
+            <div class="form-group full">
+                <label>Descricao</label>
+                <input type="text" name="descricao"
+                    value="{{ marcacao.descricao if marcacao.descricao else '' }}"
+                    placeholder="Ex: 1a sessao — manga completa braco esquerdo">
+            </div>
+            <div class="form-group full">
+                <label>Materiais usados</label>
+                <input type="text" name="materiais"
+                    value="{{ marcacao.materiais if marcacao.materiais else '' }}"
+                    placeholder="Ex: Kurisumi fineline, agulha 0310RL">
+            </div>
+            <div class="form-group full">
+                <label>Notas</label>
+                <textarea name="notas" placeholder="Notas adicionais...">{{ marcacao.notas if marcacao.notas else '' }}</textarea>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <a href="{{ url_for('marcacoes') }}" class="btn btn-ghost">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

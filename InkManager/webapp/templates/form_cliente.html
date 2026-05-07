@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}{{ titulo }} — InkManager{% endblock %}
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <div class="page-title">{{ titulo }}</div>
+        <div class="page-subtitle"><a href="{{ url_for('clientes') }}" style="color:var(--text3)">Clientes</a> / {{ titulo }}</div>
+    </div>
+</div>
+
+<div class="form-card">
+    <form method="post">
+        <div class="form-grid">
+            <div class="form-group full">
+                <label>Nome Completo *</label>
+                <input type="text" name="nome" value="{{ cliente.nome or '' }}" required placeholder="Nome do cliente">
+            </div>
+            <div class="form-group">
+                <label>Data de Nascimento</label>
+                <input type="date" name="data_nascimento" value="{{ cliente.data_nascimento.strftime('%Y-%m-%d') if cliente.data_nascimento else '' }}">
+            </div>
+            <div class="form-group">
+                <label>Telemóvel</label>
+                <input type="text" name="telemovel" value="{{ cliente.telemovel or '' }}" placeholder="+351 900 000 000">
+            </div>
+            <div class="form-group">
+                <label>Instagram</label>
+                <input type="text" name="instagram" value="{{ cliente.instagram or '' }}" placeholder="@utilizador">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" value="{{ cliente.email or '' }}" placeholder="email@exemplo.com">
+            </div>
+            <div class="form-group full">
+                <label>Observações / Alergias</label>
+                <textarea name="observacoes" placeholder="Alergias a tintas, condições de pele, notas importantes...">{{ cliente.observacoes or '' }}</textarea>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <a href="{{ url_for('clientes') }}" class="btn btn-ghost">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
